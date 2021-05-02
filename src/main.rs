@@ -1,21 +1,28 @@
 mod algo;
 mod stall;
 
-use algo::Genotype;
-use stall::Stall;
+use algo::{GivenStalls, Phenotype};
+use rand::seq::SliceRandom;
+use rand::thread_rng;
 use std::fs;
 use std::path::Path;
 
-fn load_stalls_from_file(path: &Path) -> Vec<Stall> {
+fn load_stalls_from_file(path: &Path) -> GivenStalls {
     let data = fs::read(path).unwrap();
     serde_json::from_str(&String::from_utf8_lossy(&data)).unwrap()
 }
 
+fn init(given_stalls: GivenStalls) {
+    let mut rng = thread_rng();
+    let mut genotype: Vec<u8> = given_stalls.iter().map(|s| s.id()).collect();
+    genotype.shuffle(&mut rng);
+    let pheno = Phenotype::new(given_stalls, genotype);
+    println!("{}", pheno.fitness())
+}
+
 fn main() {
     let path = Path::new("stalls.json");
-    let from_file = load_stalls_from_file(path);
-    println!("from file = {:?}", from_file);
-
-    let geno = Genotype::new(from_file);
-    println!("{}", geno.fitness())
+    let given_stalls = load_stalls_from_file(path);
+    println!("from file = {:?}", given_stalls);
+    init(given_stalls);
 }
