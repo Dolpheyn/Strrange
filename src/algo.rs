@@ -1,7 +1,7 @@
 use crate::stall::Stall;
 
 type Genotype = Vec<u8>;
-type GivenStalls = Vec<Stall>;
+pub type GivenStalls = Vec<Stall>;
 
 trait GetId {
     fn get_ids(&self) -> Vec<u8>;
@@ -19,7 +19,7 @@ pub struct Phenotype {
 }
 
 impl Phenotype {
-    pub fn new(given_stalls: Vec<Stall>, genotype: Genotype) -> Phenotype {
+    pub fn new(given_stalls: GivenStalls, genotype: Genotype) -> Phenotype {
         Phenotype {
             given_stalls,
             genotype,
