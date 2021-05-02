@@ -16,8 +16,8 @@ fn init(given_stalls: GivenStalls) {
     let mut rng = thread_rng();
     let mut genotype: Vec<u8> = given_stalls.iter().map(|s| s.id()).collect();
     genotype.shuffle(&mut rng);
-    let pheno = Phenotype::new(given_stalls, genotype);
-    println!("{}", pheno.fitness())
+    let pheno = Phenotype::new(genotype);
+    println!("{}", pheno.fitness(given_stalls))
 }
 
 fn main() {

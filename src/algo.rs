@@ -14,22 +14,18 @@ impl GetId for GivenStalls {
 }
 
 pub struct Phenotype {
-    given_stalls: GivenStalls,
     genotype: Genotype,
 }
 
 impl Phenotype {
-    pub fn new(given_stalls: GivenStalls, genotype: Genotype) -> Phenotype {
-        Phenotype {
-            given_stalls,
-            genotype,
-        }
+    pub fn new(genotype: Genotype) -> Phenotype {
+        Phenotype { genotype }
     }
 
-    pub fn fitness(&self) -> u8 {
+    pub fn fitness(&self, given_stalls: GivenStalls) -> u8 {
         self.genotype
             .iter()
-            .map(|p| self.given_stalls.iter().find(|s| &s.id() == p).unwrap())
+            .map(|p| given_stalls.iter().find(|s| &s.id() == p).unwrap())
             .collect::<Vec<_>>()
             .windows(2)
             .map(|pair| pair[0].category() == pair[1].category())
@@ -57,8 +53,8 @@ mod tests {
         "#;
         let given_stalls: GivenStalls = serde_json::from_str(&data).unwrap();
         let ids = given_stalls.get_ids();
-        let pheno = Phenotype::new(given_stalls, ids);
-        let fitness = pheno.fitness();
+        let pheno = Phenotype::new(ids);
+        let fitness = pheno.fitness(given_stalls);
 
         assert_eq!(fitness, 0);
     }
@@ -74,8 +70,8 @@ mod tests {
         "#;
         let given_stalls: GivenStalls = serde_json::from_str(&data).unwrap();
         let ids = given_stalls.get_ids();
-        let pheno = Phenotype::new(given_stalls, ids);
-        let fitness = pheno.fitness();
+        let pheno = Phenotype::new(ids);
+        let fitness = pheno.fitness(given_stalls);
 
         assert_eq!(fitness, 2);
     }
