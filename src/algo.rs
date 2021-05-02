@@ -1,16 +1,36 @@
 use crate::stall::Stall;
 
-pub struct Genotype {
-    phenotype: Vec<Stall>,
+type Genotype = Vec<u8>;
+type GivenStalls = Vec<Stall>;
+
+trait GetId {
+    fn get_ids(&self) -> Vec<u8>;
 }
 
-impl Genotype {
-    pub fn new(phenotype: Vec<Stall>) -> Genotype {
-        Genotype { phenotype }
+impl GetId for GivenStalls {
+    fn get_ids(&self) -> Vec<u8> {
+        self.iter().map(|s| s.id()).collect()
+    }
+}
+
+pub struct Phenotype {
+    given_stalls: GivenStalls,
+    genotype: Genotype,
+}
+
+impl Phenotype {
+    pub fn new(given_stalls: Vec<Stall>, genotype: Genotype) -> Phenotype {
+        Phenotype {
+            given_stalls,
+            genotype,
+        }
     }
 
     pub fn fitness(&self) -> u8 {
-        self.phenotype
+        self.genotype
+            .iter()
+            .map(|p| self.given_stalls.iter().find(|s| &s.id() == p).unwrap())
+            .collect::<Vec<_>>()
             .windows(2)
             .map(|pair| pair[0].category() == pair[1].category())
             .fold(0, |mut sum, b| {
@@ -21,12 +41,6 @@ impl Genotype {
             })
     }
 }
-
-pub struct Arrange {
-    population: Vec<Genotype>,
-}
-
-impl Arrange {}
 
 #[cfg(test)]
 mod tests {
@@ -41,9 +55,10 @@ mod tests {
                 {"id":2,"name":"Milo Es","category":0}
             ]
         "#;
-        let stalls = serde_json::from_str(&data).unwrap();
-        let geno = Genotype::new(stalls);
-        let fitness = geno.fitness();
+        let given_stalls: GivenStalls = serde_json::from_str(&data).unwrap();
+        let ids = given_stalls.get_ids();
+        let pheno = Phenotype::new(given_stalls, ids);
+        let fitness = pheno.fitness();
 
         assert_eq!(fitness, 0);
     }
@@ -57,9 +72,10 @@ mod tests {
                 {"id":2,"name":"Milo Es","category":0}
             ]
         "#;
-        let stalls = serde_json::from_str(&data).unwrap();
-        let geno = Genotype::new(stalls);
-        let fitness = geno.fitness();
+        let given_stalls: GivenStalls = serde_json::from_str(&data).unwrap();
+        let ids = given_stalls.get_ids();
+        let pheno = Phenotype::new(given_stalls, ids);
+        let fitness = pheno.fitness();
 
         assert_eq!(fitness, 2);
     }

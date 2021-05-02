@@ -19,4 +19,8 @@ impl Stall {
     pub fn category(&self) -> u8 {
         self.category
     }
+
+    pub fn id(&self) -> u8 {
+        self.id
+    }
 }
