@@ -8,14 +8,6 @@ pub struct Stall {
 }
 
 impl Stall {
-    pub fn new(id: u8, name: &str, category: u8) -> Stall {
-        Stall {
-            id,
-            name: name.to_string(),
-            category,
-        }
-    }
-
     pub fn category(&self) -> u8 {
         self.category
     }
