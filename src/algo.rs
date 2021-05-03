@@ -1,3 +1,5 @@
+use crate::phenotype::AsStalls;
+use crate::phenotype::Phenotype;
 use crate::population::Population;
 use crate::stall::Stall;
 use rand::{thread_rng, Rng};
@@ -6,11 +8,21 @@ struct Optimizer {
     the_population: Population,
     crossover_rate: f32,
     mutation_rate: f32,
-    prev_step: Step,
+    cur_iter: u32,
+    max_iter: u32,
+}
+
+enum Step {
+    Intermediate(usize, Phenotype, Vec<Stall>, Vec<Phenotype>),
+    Final(Phenotype, Vec<Stall>),
 }
 
 impl Optimizer {
-    pub fn step(&self) -> Step {
+    fn reached_max_iter(&self) -> bool {
+        self.cur_iter == self.max_iter
+    }
+
+    pub fn step(&mut self) -> Step {
         let given_stalls = &self.the_population.given_stalls;
         let population = &self.the_population.population;
 
@@ -26,6 +38,12 @@ impl Optimizer {
         let p2_idx = pop_fitness[1].0; // Second best chromosome
         let p1 = (p1_idx, population[p1_idx].clone());
         let p2 = (p2_idx, population[p2_idx].clone());
+
+        // Termination Case
+        if p1.1.fitness(given_stalls) == 0 || self.reached_max_iter() {
+            let best = p1.1;
+            return Step::Final(best.clone(), best.as_stalls(given_stalls));
+        }
 
         let mut rng = thread_rng();
         let (l_idx, r_idx) = {
@@ -76,20 +94,15 @@ impl Optimizer {
             }
         }
 
-        todo!();
-        //Step {
-        //    population: self.the_population.clone(),
-        //    step_type: StepType::Intermediate,
-        //}
+        self.cur_iter += 1;
+
+        let best_idx = p1.0;
+        let best = p1.1;
+        Step::Intermediate(
+            best_idx,
+            best.clone(),
+            best.as_stalls(given_stalls),
+            population.clone(),
+        )
     }
-}
-
-struct Step {
-    population: Population,
-    step_type: StepType,
-}
-
-enum StepType {
-    Intermediate,
-    Final,
 }
