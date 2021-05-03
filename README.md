@@ -1,4 +1,8 @@
-# Strrange(Stall Arrangement) - A Genetic Algorithm Permutation Problem
+# Strrange
+
+Strrange (Stall Arrangement) - A Permutation Genetic Algorithm Use Case
+
+## Problem Statement
 
 Stalls in [bazaar][Bazaar] ramadhan can be categorized into several categories.
 It is often best to not have stalls in the same category to be close to each
@@ -40,10 +44,10 @@ Rank-based selection.
 
 ## Combination Mechanism
 
-One-point crossover on 2 best parents. 100% to happen.
+One-point crossover on 2 best parents with 100% chance to happen.
 
 ## Mutation Mechanism
 
-Swap with 30% change to happen.
+Swap with 30% chance to happen.
 
 [Bazaar]: [https://en.wikipedia.org/wiki/Bazaar]
