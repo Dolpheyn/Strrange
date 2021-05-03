@@ -1,18 +1,22 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Serialize, Deserialize)]
+pub type GivenStalls = Vec<Stall>;
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Stall {
-    id: u8,
-    name: String,
-    category: u8,
+    pub id: u8,
+    pub name: String,
+    pub category: u8,
 }
 
-impl Stall {
-    pub fn category(&self) -> u8 {
-        self.category
-    }
+impl Stall {}
 
-    pub fn id(&self) -> u8 {
-        self.id
+pub trait GetId {
+    fn get_ids(&self) -> Vec<u8>;
+}
+
+impl GetId for GivenStalls {
+    fn get_ids(&self) -> Vec<u8> {
+        self.iter().map(|s| s.id).collect()
     }
 }
