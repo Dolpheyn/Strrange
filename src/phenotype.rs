@@ -1,4 +1,4 @@
-use crate::stall::GivenStalls;
+use crate::stall::{GivenStalls, Stall};
 
 type Genotype = Vec<u8>;
 
@@ -26,6 +26,19 @@ impl Phenotype {
                 }
                 sum
             })
+    }
+}
+
+pub trait AsStalls {
+    fn as_stalls(&self, gs: &GivenStalls) -> Vec<Stall>;
+}
+
+impl AsStalls for Phenotype {
+    fn as_stalls(&self, gs: &GivenStalls) -> Vec<Stall> {
+        self.genotype
+            .iter()
+            .map(|&g| gs.iter().find(|s| s.id == g).unwrap().to_owned())
+            .collect()
     }
 }
 
