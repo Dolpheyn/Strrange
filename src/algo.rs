@@ -67,14 +67,15 @@ impl Optimizer {
 
         let mut child = vec![0; given_stalls.len()];
 
-        // Insert into child 1 the genotype within random range l_idx..r_idx
+        // Insert into child the genotype within random range l_idx..r_idx
         // from best chromosome.
         for i in l_idx..=r_idx {
             let g = &best.genotype;
             child[i] = g[i];
         }
 
-        // Fill other genes with second best chromosome, preserving the order.
+        // Fill the leftover empty genes with second best chromosome, preserving the order of the
+        // second best chromosome's gene.
         for i in 0..given_stalls.len() {
             if i >= l_idx && i <= r_idx {
                 continue;
