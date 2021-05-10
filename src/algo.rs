@@ -128,16 +128,15 @@ impl Optimizer {
         new_population.push(p1.clone());
         new_population.push(p2.clone());
 
+        // Crossover and Mutation
         for p in population.iter().skip(2) {
             let mut child_geno = p.genotype.clone();
             let chance = rand::random::<f32>;
 
-            // Cross over
             if chance() > self.crossover_rate {
                 child_geno = self.crossover(&p1, &p2);
             }
 
-            // Mutation
             if chance() > self.mutation_rate {
                 child_geno = self.mutate(child_geno);
             }
@@ -146,7 +145,8 @@ impl Optimizer {
         }
         assert_eq!(new_population.len(), self.the_population.size);
 
-        self.cur_iter += 1;
+        self.the_population.population = new_population;
+        self.cur_step += 1;
 
         Step::Intermediate(p1.clone(), p1.as_stalls(given_stalls), population.clone())
     }
