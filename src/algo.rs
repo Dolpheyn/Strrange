@@ -14,8 +14,16 @@ pub struct Optimizer {
 
 #[derive(Debug)]
 pub enum Step {
-    Intermediate(Phenotype, Vec<Stall>, Vec<Phenotype>),
-    Final(Phenotype, Vec<Stall>),
+    Intermediate {
+        best: Phenotype,
+        best_2: Phenotype,
+        best_as_stalls: Vec<Stall>,
+        population: Vec<Phenotype>,
+    },
+    Final {
+        best: Phenotype,
+        best_as_stalls: Vec<Stall>,
+    },
 }
 
 impl Optimizer {
@@ -113,20 +121,22 @@ impl Optimizer {
 
         // Selection
         population.sort_by(|a, b| a.fitness(given_stalls).cmp(&b.fitness(given_stalls))); // Sort by fitness, lower = better.
-        let p1 = population[0].clone();
-        let p2 = population[1].clone();
+        let best = population[0].clone();
+        let best_2 = population[1].clone();
 
         // Termination Case
-        if p1.fitness(given_stalls) == 0 || self.reached_max_step() {
-            let best = p1;
-            return Step::Final(best.clone(), best.as_stalls(given_stalls));
+        if best.fitness(given_stalls) == 0 || self.reached_max_step() {
+            return Step::Final {
+                best: best.clone(),
+                best_as_stalls: best.as_stalls(given_stalls),
+            };
         }
 
         let mut new_population = Vec::new();
 
         // Preserve 2 best phenotype
-        new_population.push(p1.clone());
-        new_population.push(p2.clone());
+        new_population.push(best.clone());
+        new_population.push(best_2.clone());
 
         // Crossover and Mutation
         for p in population.iter().skip(2) {
@@ -134,7 +144,7 @@ impl Optimizer {
             let chance = rand::random::<f32>;
 
             if chance() > self.crossover_rate {
-                child_geno = self.crossover(&p1, &p2);
+                child_geno = self.crossover(&best, &best_2);
             }
 
             if chance() > self.mutation_rate {
@@ -145,9 +155,14 @@ impl Optimizer {
         }
         assert_eq!(new_population.len(), self.the_population.size);
 
-        self.the_population.population = new_population;
+        self.the_population.population = new_population.clone();
         self.cur_step += 1;
 
-        Step::Intermediate(p1.clone(), p1.as_stalls(given_stalls), population.clone())
+        Step::Intermediate {
+            best_as_stalls: best.as_stalls(given_stalls),
+            best,
+            best_2,
+            population: new_population,
+        }
     }
 }
