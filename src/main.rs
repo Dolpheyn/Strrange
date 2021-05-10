@@ -3,6 +3,7 @@ mod phenotype;
 mod population;
 mod stall;
 
+use algo::Optimizer;
 use population::Population;
 use stall::GivenStalls;
 use std::fs;
@@ -14,11 +15,15 @@ fn load_stalls_from_file(path: &Path) -> GivenStalls {
 }
 
 fn main() {
-    let path = Path::new("stalls.json");
-    let given_stalls = load_stalls_from_file(path);
-    println!("from file = {:?}", given_stalls);
+    let given_stalls = load_stalls_from_file(Path::new("stalls.json"));
+    let population = Population::init(given_stalls, 10);
 
-    let pop = Population::init(given_stalls, 10);
-    // let optimizer = Optimizer::init(pop);
-    println!("Population {:?}", pop);
+    let mut optimizer = Optimizer::new(population)
+        .with_crossover_rate(0.8)
+        .with_mutation_rate(0.3)
+        .with_max_step(1000);
+
+    println!("{:?}", optimizer);
+    optimizer.step();
+    println!("{:?}", optimizer);
 }
