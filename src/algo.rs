@@ -37,6 +37,10 @@ impl Optimizer {
         }
     }
 
+    pub fn num_step_taken(&self) -> u32 {
+        self.cur_step
+    }
+
     pub fn with_crossover_rate(mut self, crossover_rate: f32) -> Self {
         self.crossover_rate = crossover_rate;
         self
