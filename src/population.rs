@@ -11,7 +11,7 @@ pub struct Population {
 }
 
 impl Population {
-    pub fn init(given_stalls: GivenStalls, size: usize) -> Population {
+    pub fn init(given_stalls: &GivenStalls, size: usize) -> Population {
         let mut geno = given_stalls.iter().map(|s| s.id).collect::<Vec<_>>();
         let mut population: Vec<Phenotype> = Vec::with_capacity(size);
 
@@ -22,7 +22,7 @@ impl Population {
         }
 
         Population {
-            given_stalls,
+            given_stalls: given_stalls.clone(),
             population,
             size,
         }
