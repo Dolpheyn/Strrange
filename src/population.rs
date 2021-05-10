@@ -7,6 +7,7 @@ use rand::thread_rng;
 pub struct Population {
     pub given_stalls: GivenStalls,
     pub population: Vec<Phenotype>,
+    pub size: usize,
 }
 
 impl Population {
@@ -23,6 +24,7 @@ impl Population {
         Population {
             given_stalls,
             population,
+            size,
         }
     }
 }
