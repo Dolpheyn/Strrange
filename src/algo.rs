@@ -23,6 +23,7 @@ pub enum Step {
     Final {
         best: Phenotype,
         best_as_stalls: Vec<Stall>,
+        avg_fitness: u8,
     },
 }
 
@@ -131,6 +132,7 @@ impl Optimizer {
         // Termination Case
         if best.fitness(given_stalls) == 0 || self.reached_max_step() {
             return Step::Final {
+                avg_fitness: self.the_population.avg_fitness(),
                 best: best.clone(),
                 best_as_stalls: best.as_stalls(given_stalls),
             };
