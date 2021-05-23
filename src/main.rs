@@ -8,7 +8,7 @@ use population::Population;
 use stall::GivenStalls;
 use std::fs;
 use std::path::Path;
-use std::time::{Duration, Instant};
+use std::time::Instant;
 
 fn load_stalls_from_file(path: &Path) -> GivenStalls {
     let data = fs::read(path).unwrap();
@@ -19,12 +19,20 @@ fn main() {
     let given_stalls = load_stalls_from_file(Path::new("stalls.json"));
     let population = Population::init(&given_stalls, 10);
 
-    let mut optimizer = Optimizer::new(population)
-        .with_crossover_rate(0.8)
-        .with_mutation_rate(0.3)
-        .with_max_step(1000);
+    let mutation_rate = 0.25;
+    let crossover_rate = 0.7;
+    let max_step = 1000;
 
-    println!("{:?}", optimizer);
+    let mut optimizer = Optimizer::new(population)
+        .with_mutation_rate(mutation_rate)
+        .with_crossover_rate(crossover_rate)
+        .with_max_step(max_step);
+
+    println!(
+        "Starting optimization with {} crossover rate, {} mutation rate, and {} max step...\n",
+        crossover_rate, mutation_rate, max_step
+    );
+
     let start_time = Instant::now();
 
     loop {
