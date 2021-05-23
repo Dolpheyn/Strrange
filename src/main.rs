@@ -47,17 +47,19 @@ fn main() {
             } => {}
 
             Step::Final {
-                best: _best,
-                best_as_stalls: _best_as_stalls,
+                best,
+                best_as_stalls,
+                avg_fitness,
             } => {
                 let duration = start_time.elapsed();
 
                 println!(
-                    "Reached final step. Best stall configuration with {} fitness score:\n",
-                    _best.fitness(&given_stalls)
+                    "Reached final step.\nBest fitness score: {}\nAvg fitness score: {}\n",
+                    best.fitness(&given_stalls),
+                    avg_fitness,
                 );
 
-                for s in _best_as_stalls {
+                for s in best_as_stalls {
                     println!("{} : c{}", s.name, s.category);
                 }
 
