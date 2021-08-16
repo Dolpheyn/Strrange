@@ -23,7 +23,7 @@ pub enum Step {
     Final {
         best: Phenotype,
         best_as_stalls: Vec<Stall>,
-        avg_fitness: u8,
+        avg_fitness: usize,
     },
 }
 

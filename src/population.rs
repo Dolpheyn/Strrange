@@ -28,13 +28,13 @@ impl Population {
         }
     }
 
-    pub fn avg_fitness(&self) -> u8 {
+    pub fn avg_fitness(&self) -> usize {
         let total_fitness = self
             .population
             .iter()
             .map(|p| p.fitness(&self.given_stalls))
             .fold(0, |sum, f| sum + f);
 
-        total_fitness / self.population.len() as u8
+        total_fitness / self.population.len()
     }
 }

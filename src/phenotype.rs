@@ -13,19 +13,15 @@ impl Phenotype {
     }
 
     #[allow(dead_code)]
-    pub fn fitness(&self, given_stalls: &GivenStalls) -> u8 {
+    pub fn fitness(&self, given_stalls: &GivenStalls) -> usize {
         self.genotype
             .iter()
             .map(|p| given_stalls.iter().find(|s| &s.id == p).unwrap())
             .collect::<Vec<_>>()
             .windows(2)
             .map(|pair| pair[0].category == pair[1].category)
-            .fold(0, |mut sum, b| {
-                if b == true {
-                    sum += 1;
-                }
-                sum
-            })
+            .filter(|&b| b)
+            .count()
     }
 }
 
