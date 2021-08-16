@@ -12,7 +12,6 @@ impl Phenotype {
         Phenotype { genotype }
     }
 
-    #[allow(dead_code)]
     pub fn fitness(&self, given_stalls: &GivenStalls) -> usize {
         self.genotype
             .iter()

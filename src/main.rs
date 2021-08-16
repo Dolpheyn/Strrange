@@ -24,14 +24,6 @@ fn load_stalls_from_file(path: &Path) -> Result<GivenStalls, StrrangeError> {
     }
 }
 
-fn main() {
-    let result = run();
-    if let Err(e) = result {
-        println!("{}", e);
-        exit(1);
-    }
-}
-
 fn run() -> Result<(), StrrangeError> {
     let given_stalls = load_stalls_from_file(Path::new("stalls.json"))?;
     let population = Population::init(&given_stalls, 10);
@@ -88,4 +80,12 @@ fn run() -> Result<(), StrrangeError> {
     }
 
     Ok(())
+}
+
+fn main() {
+    let result = run();
+    if let Err(e) = result {
+        println!("{}", e);
+        exit(1);
+    }
 }
