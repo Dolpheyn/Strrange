@@ -1,22 +1,39 @@
 mod algo;
+mod error;
 mod phenotype;
 mod population;
 mod stall;
 
-use algo::{Optimizer, Step};
-use population::Population;
-use stall::GivenStalls;
-use std::fs;
-use std::path::Path;
-use std::time::Instant;
+use crate::{
+    algo::{Optimizer, Step},
+    error::StrrangeError,
+    population::Population,
+    stall::GivenStalls,
+};
+use std::{fs, path::Path, process::exit, time::Instant};
 
-fn load_stalls_from_file(path: &Path) -> GivenStalls {
-    let data = fs::read(path).unwrap();
-    serde_json::from_str(&String::from_utf8_lossy(&data)).unwrap()
+fn load_stalls_from_file(path: &Path) -> Result<GivenStalls, StrrangeError> {
+    let data = match fs::read(path) {
+        Ok(v) => v,
+        Err(e) => return Err(StrrangeError::Str(e.to_string())),
+    };
+
+    match serde_json::from_str(&String::from_utf8_lossy(&data)) {
+        Ok(s) => Ok(s),
+        Err(e) => Err(StrrangeError::Str(e.to_string())),
+    }
 }
 
 fn main() {
-    let given_stalls = load_stalls_from_file(Path::new("stalls.json"));
+    let result = run();
+    if let Err(e) = result {
+        println!("{}", e);
+        exit(1);
+    }
+}
+
+fn run() -> Result<(), StrrangeError> {
+    let given_stalls = load_stalls_from_file(Path::new("stalls.json"))?;
     let population = Population::init(&given_stalls, 10);
 
     let mutation_rate = 0.25;
@@ -69,4 +86,6 @@ fn main() {
             }
         }
     }
+
+    Ok(())
 }
