@@ -22,18 +22,18 @@ impl Population {
         }
 
         Population {
-            given_stalls: given_stalls.clone(),
+            given_stalls: given_stalls.to_owned(),
             population,
             size,
         }
     }
 
     pub fn avg_fitness(&self) -> usize {
-        let total_fitness = self
+        let total_fitness: usize = self
             .population
             .iter()
             .map(|p| p.fitness(&self.given_stalls))
-            .fold(0, |sum, f| sum + f);
+            .sum();
 
         total_fitness / self.population.len()
     }

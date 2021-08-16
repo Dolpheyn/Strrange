@@ -82,10 +82,7 @@ impl Optimizer {
 
         // Insert into child the genotype within random range l_idx..r_idx
         // from best chromosome.
-        for i in l_idx..=r_idx {
-            let g = &best.genotype;
-            child[i] = g[i];
-        }
+        child[l_idx..(r_idx + 1)].clone_from_slice(&best.genotype[l_idx..(r_idx + 1)]);
 
         // Fill the leftover empty genes with second best chromosome, preserving the order of the
         // second best chromosome's gene.
@@ -125,7 +122,7 @@ impl Optimizer {
         let mut population = self.the_population.population.clone();
 
         // Selection
-        population.sort_by(|a, b| a.fitness(given_stalls).cmp(&b.fitness(given_stalls))); // Sort by fitness, lower = better.
+        population.sort_by_key(|a| a.fitness(given_stalls)); // Sort by fitness, lower = better.
         let best = population[0].clone();
         let best_2 = population[1].clone();
 
@@ -138,11 +135,8 @@ impl Optimizer {
             };
         }
 
-        let mut new_population = Vec::new();
-
         // Preserve 2 best phenotype
-        new_population.push(best.clone());
-        new_population.push(best_2.clone());
+        let mut new_population = vec![best.clone(), best_2.clone()];
 
         // Crossover and Mutation
         for p in population.iter().skip(2) {
