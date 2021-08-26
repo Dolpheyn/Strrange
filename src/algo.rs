@@ -155,7 +155,7 @@ impl Optimizer {
         }
         assert_eq!(new_population.len(), self.population.size());
 
-        self.population.set(new_population.clone());
+        self.population.set(&new_population);
         self.cur_step += 1;
 
         Step::Intermediate {

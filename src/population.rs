@@ -50,7 +50,7 @@ impl Population {
         &self.population
     }
 
-    pub fn set(&mut self, p: Vec<Phenotype>) {
-        self.population = p;
+    pub fn set(&mut self, p: &Vec<Phenotype>) {
+        self.population = p.clone();
     }
 }
