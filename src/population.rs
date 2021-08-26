@@ -5,9 +5,9 @@ use rand::thread_rng;
 
 #[derive(Debug, Clone)]
 pub struct Population {
-    pub given_stalls: GivenStalls,
-    pub population: Vec<Phenotype>,
-    pub size: usize,
+    given_stalls: GivenStalls,
+    population: Vec<Phenotype>,
+    size: usize,
 }
 
 impl Population {
@@ -36,5 +36,21 @@ impl Population {
             .sum();
 
         total_fitness / self.population.len()
+    }
+
+    pub fn size(&self) -> usize {
+        self.size
+    }
+
+    pub fn given_stalls(&self) -> &GivenStalls {
+        &self.given_stalls
+    }
+
+    pub fn get(&self) -> &Vec<Phenotype> {
+        &self.population
+    }
+
+    pub fn set(&mut self, p: Vec<Phenotype>) {
+        self.population = p;
     }
 }

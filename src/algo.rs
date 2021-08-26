@@ -5,7 +5,7 @@ use rand::{thread_rng, Rng};
 
 #[derive(Debug)]
 pub struct Optimizer {
-    the_population: Population,
+    population: Population,
     crossover_rate: f32,
     mutation_rate: f32,
     cur_step: u32,
@@ -30,7 +30,7 @@ pub enum Step {
 impl Optimizer {
     pub fn new(population: Population) -> Optimizer {
         Optimizer {
-            the_population: population,
+            population,
             crossover_rate: 0.0,
             mutation_rate: 0.0,
             cur_step: 0,
@@ -62,7 +62,7 @@ impl Optimizer {
     }
 
     fn crossover(&self, best: &Phenotype, second_best: &Phenotype) -> Vec<u8> {
-        let given_stalls = &self.the_population.given_stalls;
+        let given_stalls = self.population.given_stalls();
 
         let mut rng = thread_rng();
         let (l_idx, r_idx) = {
@@ -103,7 +103,7 @@ impl Optimizer {
     }
 
     fn mutate(&self, mut child: Vec<u8>) -> Vec<u8> {
-        let given_stalls = &self.the_population.given_stalls;
+        let given_stalls = self.population.given_stalls();
         let chance = rand::random::<f32>;
 
         for i in 0..given_stalls.len() - 1 {
@@ -118,20 +118,20 @@ impl Optimizer {
     }
 
     pub fn step(&mut self) -> Step {
-        let given_stalls = &self.the_population.given_stalls;
-        let mut population = self.the_population.population.clone();
+        let given_stalls = self.population.given_stalls().clone();
+        let mut population = self.population.get().clone();
 
         // Selection
-        population.sort_by_key(|a| a.fitness(given_stalls)); // Sort by fitness, lower = better.
+        population.sort_by_key(|a| a.fitness(&given_stalls)); // Sort by fitness, lower = better.
         let best = population[0].clone();
         let best_2 = population[1].clone();
 
         // Termination Case
-        if best.fitness(given_stalls) == 0 || self.reached_max_step() {
+        if best.fitness(&given_stalls) == 0 || self.reached_max_step() {
             return Step::Final {
-                avg_fitness: self.the_population.avg_fitness(),
+                avg_fitness: self.population.avg_fitness(),
                 best: best.clone(),
-                best_as_stalls: best.as_stalls(given_stalls),
+                best_as_stalls: best.as_stalls(&given_stalls),
             };
         }
 
@@ -153,13 +153,13 @@ impl Optimizer {
 
             new_population.push(Phenotype::new(child_geno));
         }
-        assert_eq!(new_population.len(), self.the_population.size);
+        assert_eq!(new_population.len(), self.population.size());
 
-        self.the_population.population = new_population.clone();
+        self.population.set(new_population.clone());
         self.cur_step += 1;
 
         Step::Intermediate {
-            best_as_stalls: best.as_stalls(given_stalls),
+            best_as_stalls: best.as_stalls(&given_stalls),
             best,
             best_2,
             population: new_population,
