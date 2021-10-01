@@ -4,6 +4,7 @@ type Genotype = Vec<u8>;
 
 #[derive(Debug, Clone)]
 pub struct Phenotype {
+    // Each genotype is a permutation list of stalls' id.
     pub genotype: Genotype,
 }
 
@@ -12,27 +13,30 @@ impl Phenotype {
         Phenotype { genotype }
     }
 
+    // Calculate how many adjacent stalls with the same category(i.e. stalls that are next to
+    // eachother with the same category). Lower = better.
     pub fn fitness(&self, given_stalls: &GivenStalls) -> usize {
-        self.genotype
-            .iter()
-            .map(|p| given_stalls.iter().find(|s| &s.id == p).unwrap())
-            .collect::<Vec<_>>()
+        self.as_stalls(given_stalls)
+            // Take 2 stalls at a time
             .windows(2)
+            // If the 2 stalls has the same category, map to true, else false
             .map(|pair| pair[0].category == pair[1].category)
-            .filter(|&b| b)
+            // Get only the stalls with same category
+            .filter(|&same| same)
+            // Get the count
             .count()
     }
 }
 
 pub trait AsStalls {
-    fn as_stalls(&self, gs: &GivenStalls) -> Vec<Stall>;
+    fn as_stalls(&self, given_stalls: &GivenStalls) -> Vec<Stall>;
 }
 
 impl AsStalls for Phenotype {
-    fn as_stalls(&self, gs: &GivenStalls) -> Vec<Stall> {
+    fn as_stalls(&self, given_stalls: &GivenStalls) -> Vec<Stall> {
         self.genotype
             .iter()
-            .map(|&g| gs.iter().find(|s| s.id == g).unwrap().to_owned())
+            .map(|g| given_stalls.iter().find(|s| s.id == *g).unwrap().to_owned())
             .collect()
     }
 }
